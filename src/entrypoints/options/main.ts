@@ -1,5 +1,5 @@
 import { browser } from 'wxt/browser';
-import { testConnection } from '../../lib/sabnzbd';
+import type { Request, Response } from '../../lib/messages';
 import {
   type CategoryMode,
   type Priority,
@@ -42,9 +42,15 @@ function refreshVisibility() {
   $('customCategory').hidden = s.categoryMode !== 'custom';
 }
 
-/** SABnzbd lives on a user-chosen host, so ask for access to just that origin. */
+/**
+ * SABnzbd lives on a user-chosen host, so ask for access to just that host. Both http and https are
+ * requested together: a proxy that redirects one to the other would otherwise hit an unpermitted origin.
+ */
 async function ensureHostAccess(sabUrl: string): Promise<void> {
-  const origins = [`${sabOrigin(sabUrl)}/*`];
+  const origin = new URL(sabOrigin(sabUrl));
+  const sibling = new URL(origin.origin);
+  sibling.protocol = origin.protocol === 'http:' ? 'https:' : 'http:';
+  const origins = [`${origin.origin}/*`, `${sibling.origin}/*`];
   if (await browser.permissions.contains({ origins })) return;
   if (!(await browser.permissions.request({ origins }))) throw new Error('Host permission denied');
 }
@@ -67,7 +73,23 @@ $('save').addEventListener('click', () =>
   }),
 );
 $('test').addEventListener('click', () =>
-  run(async (s) => `✓ Connected, SABnzbd ${await testConnection(s)}`),
+  run(async (s) => {
+    // Runs in the background worker, the same context and request shapes a send uses.
+    const req: Request = { type: 'test-connection', settings: s };
+    const res = (await browser.runtime.sendMessage(req)) as Response;
+    if (res.status === 'error') throw new Error(res.message);
+    const found = res.connection;
+    if (!found) throw new Error('No response from the background worker');
+    switch (found.redirect) {
+      case 'none':
+        return `✓ Connected, SABnzbd ${found.version} (version, API key and upload all OK)`;
+      case 'followed':
+        $<HTMLInputElement>('sabUrl').value = found.baseUrl;
+        await ensureHostAccess(found.baseUrl);
+        await saveSettings({ ...s, sabUrl: found.baseUrl });
+        return `✓ Connected, SABnzbd ${found.version}. SABnzbd redirected, so the URL is now ${found.baseUrl} (saved)`;
+    }
+  }),
 );
 for (const id of ['sendMethod', 'categoryMode']) $(id).addEventListener('change', refreshVisibility);
 
