@@ -5,6 +5,7 @@ Chrome extension (MV3, built with WXT) that adds a **⇩ SAB** button to every r
 ## Use
 - `bun install && bun run build`
 - chrome://extensions → Developer mode → Load unpacked → `.output/chrome-mv3`
+- For everyday use in Arc/Chrome, load this production folder. `.output/chrome-mv3-dev` requires `bun run dev` to stay running; without it the options page can display while Save and Test connection do nothing. After rebuilding, reload the extension on the browser's extensions page and reopen its options.
 - Open the extension options, set the SABnzbd URL and API key, click Test connection.
 
 ## Layout
