@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>NZB Sender options</title>
+    <meta name="manifest.open_in_tab" content="false" />
+    <style>
+      body { font: 14px system-ui, sans-serif; min-width: 380px; padding: 12px; }
+      label { display: block; margin: 8px 0 2px; font-weight: 600; }
+      input, select { width: 100%; box-sizing: border-box; padding: 4px; }
+      button { margin: 12px 6px 0 0; padding: 4px 10px; }
+      #status { margin-top: 8px; min-height: 1.2em; }
+      small { color: #666; }
+    </style>
+  </head>
+  <body>
+    <h3>NZB Sender → SABnzbd</h3>
+    <label for="sabUrl">SABnzbd URL</label>
+    <input id="sabUrl" placeholder="http://localhost:8080" />
+    <label for="apiKey">API key</label>
+    <input id="apiKey" type="password" />
+    <label for="sendMethod">Send method</label>
+    <select id="sendMethod">
+      <option value="addfile">Upload NZB (uses your omgwtfnzbs login)</option>
+      <option value="addurl">Send URL (SABnzbd fetches it)</option>
+    </select>
+    <div id="urlRow">
+      <label for="nzbUrlTemplate">NZB URL template</label>
+      <input id="nzbUrlTemplate" />
+      <small>Use {id} for the release id. SABnzbd has no cookies, so the URL must carry your omgwtfnzbs API credentials.</small>
+    </div>
+    <label for="categoryMode">Category</label>
+    <select id="categoryMode">
+      <option value="page">From the page (tv, movies…)</option>
+      <option value="custom">Always use…</option>
+      <option value="none">None (SABnzbd default)</option>
+    </select>
+    <input id="customCategory" placeholder="category name" />
+    <label for="priority">Priority</label>
+    <select id="priority">
+      <option value="default">Default</option>
+      <option value="low">Low</option>
+      <option value="normal">Normal</option>
+      <option value="high">High</option>
+      <option value="force">Force</option>
+    </select>
+    <button id="save">Save</button><button id="test">Test connection</button>
+    <div id="status"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
