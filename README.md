@@ -1,5 +1,7 @@
 # nzb-sender
 
+<img src="public/logo.png" width="128" height="128" alt="NZB Sender logo" />
+
 Chrome extension (MV3, built with WXT) that adds a **⇩ SAB** button to every result on omgwtfnzbs and sends the NZB straight to SABnzbd.
 
 Releases already completed in SABnzbd show a green **✓ downloaded** badge beside the button, with the completion date on hover. Matches use the job name or original NZB filename, ignoring case, dots, spaces, underscores, and the `.nzb` extension. Different release groups, qualities, and episodes remain separate. Failed or unfinished jobs do not count as downloaded, and sending a job does not mark it completed.
